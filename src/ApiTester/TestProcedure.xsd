@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xs:schema
+  elementFormDefault="qualified"
+  id="TestProcedure"
+  targetNamespace="http://github.com/jlahteen/apitester/testprocedure.xsd"
+  xmlns="http://github.com/jlahteen/apitester/testprocedure.xsd"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <!-- Define the root elements -->
+  <xs:element name="testProcedure" type="testProcedureType"/>
+  
+  <!-- Define configSettingsType -->
+  <xs:complexType name="configSettingsType">
+    <xs:attribute name="sleepTimeAfterTestPhase" type="xs:unsignedInt" use="optional"/>
+    <xs:attribute name="sleepTimeAfterTestOperation" type="xs:unsignedInt" use="optional"/>
+    <xs:attribute name="suspendTestPhaseOnFailedStatus" type="xs:boolean" use="optional"/>
+    <xs:attribute name="suspendTestPhaseOnFaultedStatus" type="xs:boolean" use="optional"/>
+    <xs:attribute name="suspendTestProcedureOnFailedStatus" type="xs:boolean" use="optional"/>
+    <xs:attribute name="suspendTestProcedureOnFaultedStatus" type="xs:boolean" use="optional"/>
+  </xs:complexType>
+  
+  <!-- Define constructorType -->
+  <xs:complexType name="constructorType">
+    <xs:sequence>
+      <xs:element name="parameters" type="parametersType"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <!-- Define customOperationType -->
+  <xs:complexType name="customOperationType">
+    <xs:sequence>
+      <xs:any namespace="##any" processContents="skip" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="assemblyFile" type="filePathType" use="required"/>
+    <xs:attribute name="fullClassName" type="fullClassNameType" use="required"/>
+    <xs:anyAttribute namespace="##any" processContents="skip"/>
+  </xs:complexType>
+  
+  <!-- Define filePathType -->
+  <xs:simpleType name="filePathType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="5"/>
+      <xs:pattern value="([a-zA-Z0-9:\\_.-])*"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <!-- Define fullClassNameType -->
+  <xs:simpleType name="fullClassNameType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+      <xs:pattern value="([a-zA-Z0-9_.])*"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <!-- Define httpGetRequestType -->
+  <xs:complexType name="httpGetRequestType">
+    <xs:attribute name="uri" use="required" type="xs:anyURI"/>
+    <xs:attribute name="responseFile" type="filePathType" use="optional"/>
+  </xs:complexType>
+  
+  <!-- Define httpPostRequestType -->
+  <xs:complexType name="httpPostRequestType">
+    <xs:attribute name="uri" use="required" type="xs:anyURI"/>
+    <xs:attribute name="requestFile" type="filePathType" use="required"/>
+    <xs:attribute name="responseFile" type="filePathType" use="optional"/>
+  </xs:complexType>
+  
+  <!-- Define parametersType -->
+  <xs:complexType name="parametersType">
+    <xs:sequence>
+      <xs:element name="parameter" type="parameterType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <!-- Define parameterType -->
+  <xs:complexType name="parameterType">
+    <xs:attribute name="type" type="typeType" use="required"/>
+    <xs:attribute name="value" type="xs:string" use="required"/>
+  </xs:complexType>
+  
+  <!-- Define resetMethodType -->
+  <xs:complexType name="resetMethodType">
+    <xs:attribute name="name" type="strictTokenType" use="required"/>
+  </xs:complexType>
+  
+  <!-- Define returnsType -->
+  <xs:complexType name="returnsType">
+    <xs:attribute name="type" type="typeType" use="required"/>
+    <xs:attribute name="value" type="xs:string" use="required"/>
+  </xs:complexType>
+  
+  <!-- Define strictTokenType -->
+  <xs:simpleType name="strictTokenType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+      <xs:pattern value="([a-zA-Z0-9_.-])*"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <!-- Define testObjectMethodCallType -->
+  <xs:complexType name="testObjectMethodCallType">
+    <xs:sequence>
+      <xs:element name="parameters" type="parametersType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="returns" type="returnsType" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="testObject" type="strictTokenType" use="required"/>
+    <xs:attribute name="method" type="strictTokenType" use="required"/>
+  </xs:complexType>
+  
+  <!-- Define testObjectsType -->
+  <xs:complexType name="testObjectsType">
+    <xs:sequence>
+      <xs:element name="testObject" type="testObjectType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <!-- Define testObjectType -->
+  <xs:complexType name="testObjectType">
+    <xs:sequence>
+      <xs:element name="constructor" type="constructorType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="resetMethod" type="resetMethodType" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="strictTokenType" use="required"/>
+    <xs:attribute name="assemblyFile" type="filePathType" use="required"/>
+    <xs:attribute name="fullClassName" type="fullClassNameType" use="required"/>
+  </xs:complexType>
+  
+  <!-- Define testOperationsType -->
+  <xs:complexType name="testOperationsType">
+    <xs:sequence>
+      <xs:choice minOccurs="1" maxOccurs="unbounded">
+        <xs:element name="customOperation" type="customOperationType"/>
+        <xs:element name="httpGetRequest" type="httpGetRequestType"/>
+        <xs:element name="httpPostRequest" type="httpPostRequestType"/>
+        <xs:element name="testObjectMethodCall" type="testObjectMethodCallType"/>
+        <xs:element name="webServiceCall" type="webServiceCallType"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <!-- Define testPhasesType -->
+  <xs:complexType name="testPhasesType">
+    <xs:sequence>
+      <xs:element name="testPhase" type="testPhaseType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <!-- Define testPhaseType -->
+  <xs:complexType name="testPhaseType">
+    <xs:sequence>
+      <xs:element name="testOperations" type="testOperationsType" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="strictTokenType" use="required"/>
+  </xs:complexType>
+  
+  <!-- Define testProcedureType -->
+  <xs:complexType name="testProcedureType">
+    <xs:sequence>
+      <xs:element name="configSettings" type="configSettingsType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="testObjects" type="testObjectsType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="testPhases" type="testPhasesType" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="strictTokenType" use="required"/>
+  </xs:complexType>
+  
+  <!-- Define typeType -->
+  <xs:simpleType name="typeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="System.Boolean"/>
+      <xs:enumeration value="System.Byte"/>
+      <xs:enumeration value="System.Char"/>
+      <xs:enumeration value="System.Decimal"/>
+      <xs:enumeration value="System.Double"/>
+      <xs:enumeration value="System.Int16"/>
+      <xs:enumeration value="System.Int32"/>
+      <xs:enumeration value="System.Int64"/>
+      <xs:enumeration value="System.SByte"/>
+      <xs:enumeration value="System.Single"/>
+      <xs:enumeration value="System.String"/>
+      <xs:enumeration value="System.UInt32"/>
+      <xs:enumeration value="System.UInt64"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <!-- Define webServiceCallType -->
+  <xs:complexType name="webServiceCallType">
+    <xs:attribute name="uri" use="required" type="xs:anyURI"/>
+    <xs:attribute name="soapAction" use="required" type="xs:anyURI"/>
+    <xs:attribute name="requestFile" type="filePathType" use="required"/>
+    <xs:attribute name="responseFile" type="filePathType" use="optional"/>
+  </xs:complexType>
+  
+</xs:schema>

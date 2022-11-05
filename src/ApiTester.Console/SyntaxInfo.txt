@@ -1,0 +1,16 @@
+﻿
+ApiTester v.<version>
+
+Syntax:
+
+  ApiTester [<options>] <testProcedureXmlFile>
+
+Options:
+
+  /repeatCount:<value> [1]
+
+  /parallelRunCount:<value> [1]
+
+  /testReportWriter:<value> [None]
+
+  /outputDirectory:<value> [.]
